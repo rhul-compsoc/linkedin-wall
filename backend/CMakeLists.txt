@@ -45,18 +45,33 @@ string(LENGTH "${CMAKE_SOURCE_DIR}/" SOURCE_PATH_SIZE)
 add_definitions("-DSOURCE_PATH_SIZE=${SOURCE_PATH_SIZE}")
 add_definitions("-D__FILENAME__=(__FILE__ + SOURCE_PATH_SIZE)")
 
+set(COMPILER_FLAGS
+    "-Og -Wno-unused-parameter -Wall -Wextra -Wpedantic -Werror -g")
+set(CMAKE_C_FLAGS "${COMPILER_FLAGS}")
+set(CMAKE_CXX_FLAGS "${COMPILER_FLAGS}")
+
+# Setup doxygen
+find_package(Doxygen REQUIRED dot OPTIONAL_COMPONENTS mscgen dia)
+
 # Add Libraries
 add_subdirectory(json)
 
 set(LIBS curl nlohmann_json::nlohmann_json pqxx pq)
 
-# Soucres
-set(SRC ./testing.h/logger.h ./testing.h/logger.c ./testing.h/ansi_colour.h)
+# Sources
+set(CONFIG_SRC ./config/parser.h ./config/parser.cpp ./config/config.h
+               ./config/config.cpp)
+set(MODEL_SRC ./model/auth.h ./model/auth.cpp)
+set(SRC ./testing.h/logger.h ./testing.h/logger.c ./testing.h/ansi_colour.h
+        ${MODEL_SRC} ${CONFIG_SRC})
 set(TEST ${SRC} ./testing.h/testing.h ./testing.h/testing.c ./test_main.cpp)
 
+# Main executable
 add_executable(linkedin-wall ./main.cpp ${SRC})
 target_link_libraries(linkedin-wall ${LIBS})
+doxygen_add_docs(linkedin-wall-docs ${SRC} "Generate documentation pages")
 
+# Test executable
 add_executable(linkedin-wall-tests ${TEST})
 target_link_libraries(linkedin-wall-tests ${LIBS})
 
