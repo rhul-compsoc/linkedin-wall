@@ -1,0 +1,6 @@
+[submodule "backend/testing.h"]
+	path = backend/testing.h
+	url = https://github.com/djpiper28/testing.h
+[submodule "backend/json"]
+	path = backend/json
+	url = https://github.com/nlohmann/json
