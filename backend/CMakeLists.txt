@@ -48,14 +48,17 @@ add_definitions("-D__FILENAME__=(__FILE__ + SOURCE_PATH_SIZE)")
 # Add Libraries
 add_subdirectory(json)
 
-set(LIBS curl nlohmann_json::nlohmann_json)
+set(LIBS curl nlohmann_json::nlohmann_json pqxx pq)
 
 # Soucres
 set(SRC ./testing.h/logger.h ./testing.h/logger.c ./testing.h/ansi_colour.h)
 set(TEST ${SRC} ./testing.h/testing.h ./testing.h/testing.c ./test_main.cpp)
 
-add_executable(linked-wall ./main.cpp ${SRC})
+add_executable(linkedin-wall ./main.cpp ${SRC})
+target_link_libraries(linkedin-wall ${LIBS})
+
 add_executable(linkedin-wall-tests ${TEST})
+target_link_libraries(linkedin-wall-tests ${LIBS})
 
 enable_testing()
 add_test(linkedin-wall-tests linkedin-wall-tests)

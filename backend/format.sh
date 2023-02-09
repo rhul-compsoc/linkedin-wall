@@ -1,6 +1,4 @@
 #!/bin/bash
 
-find . | grep ".*\\.[c|h]\$" | xargs astyle --style=kr
-find . | grep ".*\\.[c|h]pp\$" | xargs astyle --style=kr
-astyle --style=kr *.cpp
+find . | grep -E "\\.[ch]p{2}?\$" | xargs -n 1 -P 0 astyle --style=kr
 cmake-format ./CMakeLists.txt > ./CMakeLists.txt.orig && cp ./CMakeLists.txt.orig ./CMakeLists.txt
