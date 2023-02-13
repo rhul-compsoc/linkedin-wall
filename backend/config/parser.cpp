@@ -1,4 +1,5 @@
 #include "./parser.h"
+#include "../testing.h/logger.h"
 #include <assert.h>
 
 using namespace Linkedin;
@@ -46,6 +47,12 @@ std::pair<config_parser_state_t, ConfigElement *> ConfigParser::read_key_value()
     }
 
     if (value.size() == 0) {
+        lprintf(LOG_ERROR, "Found a zero-length value for key %s\n", key.c_str());
+        return std::pair(CONFIG_PARSER_ERROR, nullptr);
+    }
+
+    if (key.size() == 0) {
+        lprintf(LOG_ERROR, "Found a zero-length key\n");
         return std::pair(CONFIG_PARSER_ERROR, nullptr);
     }
 
@@ -58,6 +65,7 @@ std::pair<config_parser_state_t, ConfigElement *> ConfigParser::next_element()
     if (c == EOF) {
         return std::pair(CONFIG_PARSER_EOF, nullptr);
     } else if (c == '\n') {
+        lprintf(LOG_WARNING, "Empty line found in config file, this line will be removed\n");
         return std::pair(CONFIG_PARSER_SKIP, nullptr);
     } else if (c == '#') {
         return this->read_comment();

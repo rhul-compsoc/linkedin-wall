@@ -6,6 +6,7 @@
 
 using namespace Linkedin;
 
+/// Define base elemeent
 ConfigElement::ConfigElement()
 {
 
@@ -27,6 +28,7 @@ config_element_type_t ConfigElement::type()
     return CONFIG_ELEMENT_OTHER;
 }
 
+/// Override config key value element
 ConfigKeyValueElement::ConfigKeyValueElement(std::string key, std::string value)
 {
     this->key = key;
@@ -43,6 +45,7 @@ config_element_type_t ConfigKeyValueElement::type()
     return CONFIG_ELEMENT_KEY_VALUE;
 }
 
+/// Override comment element
 ConfigCommentElement::ConfigCommentElement(std::string comment)
 {
     this->comment = comment;
@@ -58,6 +61,7 @@ config_element_type_t ConfigCommentElement::type()
     return CONFIG_ELEMENT_COMMENT;
 }
 
+/// Define config constructor, the file_name is written to on to_string
 Config::Config(std::string file_name)
 {
     this->file_name = file_name;
@@ -66,7 +70,7 @@ Config::Config(std::string file_name)
     if (f == NULL) {
         this->create_defaults();
     } else {
-        ConfigParser parser(f);
+        ConfigParser parser = ConfigParser(f);
         bool flag = true;
         size_t line = 0;
 
@@ -79,14 +83,16 @@ Config::Config(std::string file_name)
                 continue;
             }
 
+            // Check for errors
             if (ret.first == CONFIG_PARSER_ERROR) {
-                lprintf(LOG_ERROR, "An error has occured on line %ld of the config %s\n",
+                lprintf(LOG_ERROR, "An error has occurred on line %ld of the config %s\n",
                         line,
                         file_name.c_str());
-                flag = false;
-                continue;
+                fclose(f);
+                throw std::runtime_error("An error occurred during parsing the config file");
             }
 
+            // Check for EOF
             if (ret.first == CONFIG_PARSER_EOF) {
                 flag = false;
                 continue;
