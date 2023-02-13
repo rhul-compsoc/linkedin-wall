@@ -170,7 +170,8 @@ static int test_config_good_case()
             "abc=123\n"
             KEY_VALUE_1 "\n"
             COMMENT_1 "\n"
-            "\n\n\n");
+            "\n\n\n"
+            "# Used by unit tests");
     fclose(f);
 
     Config config = Config(GOOD_CONFIG_FILE);
@@ -193,9 +194,34 @@ static int test_config_good_case()
     return 1;
 }
 
+#define BAD_CONFIG_FILE "bad_config_file.conf"
+static int test_config_bad_case()
+{
+    bool flag = false;
+
+    FILE *f = fopen(BAD_CONFIG_FILE, "w");
+    ASSERT(f != NULL);
+    fprintf(f, "# This is a test file\n"
+            "it contains\n"
+            "lines like that one=that fail"
+            "# Used by unit tests");
+    fclose(f);
+
+    try {
+        Config config = Config(BAD_CONFIG_FILE);
+        lprintf(LOG_ERROR, "An invalid config should cause an exception to be thrown\n");
+    } catch(std::exception &e) {
+        flag = true;
+    }
+
+    ASSERT(flag);
+    return 1;
+}
+
 SUB_TEST(test_config, {&test_config_elemenets, "Test config elements"},
 {&test_parser_good_case, "Test parser good case"},
 {&test_parser_error_case_1, "Test parser error case 1"},
 {&test_parser_error_case_2, "Test parser error case 2"},
 {&test_parser_error_case_3, "Test parser error case 3"},
-{&test_config_good_case, "Test config good case"})
+{&test_config_good_case, "Test config good case"},
+{&test_config_bad_case, "Test config bad case"})
