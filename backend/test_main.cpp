@@ -6,5 +6,5 @@ SUB_TEST(__main, {&test_config, "Test ./config"})
 
 int main()
 {
-    return __main() == 0 ? 0 : 1;
+    return __main() ? 0 : 1;
 }
