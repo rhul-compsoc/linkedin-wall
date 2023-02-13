@@ -9,7 +9,7 @@ ConfigParser::ConfigParser(FILE *file)
     assert(file != NULL);
 }
 
-config_parser_state_t ConfigParser::read_comment(ConfigElement &next)
+std::pair<config_parser_state_t, ConfigElement *> ConfigParser::read_comment()
 {
     std::string buffer = "";
 
@@ -21,17 +21,10 @@ config_parser_state_t ConfigParser::read_comment(ConfigElement &next)
         buffer += c;
     }
 
-    ConfigCommentElement tmp = ConfigCommentElement(buffer);
-    next = tmp;
-
-    if (c == EOF) {
-        return CONFIG_PARSER_EOF;
-    } else {
-        return CONFIG_PARSER_NEXT;
-    }
+    return std::pair(CONFIG_PARSER_NEXT, new ConfigCommentElement(buffer));
 }
 
-config_parser_state_t ConfigParser::read_key_value(ConfigElement &next)
+std::pair<config_parser_state_t, ConfigElement *> ConfigParser::read_key_value()
 {
     bool seen_value = false;
     std::string key = "";
@@ -53,31 +46,24 @@ config_parser_state_t ConfigParser::read_key_value(ConfigElement &next)
     }
 
     if (value.size() == 0) {
-        return CONFIG_PARSER_ERROR;
+        return std::pair(CONFIG_PARSER_ERROR, nullptr);
     }
 
-    ConfigKeyValueElement tmp = ConfigKeyValueElement(key, value);
-    next = tmp;
-
-    if (c == EOF) {
-        return CONFIG_PARSER_EOF;
-    } else {
-        return CONFIG_PARSER_NEXT;
-    }
+    return std::pair(CONFIG_PARSER_NEXT, new ConfigKeyValueElement(key, value));
 }
 
-config_parser_state_t ConfigParser::next_element(ConfigElement &next)
+std::pair<config_parser_state_t, ConfigElement *> ConfigParser::next_element()
 {
     int c = fgetc(this->file);
     if (c == EOF) {
-        return CONFIG_PARSER_EOF;
+        return std::pair(CONFIG_PARSER_EOF, nullptr);
     } else if (c == '\n') {
-        return CONFIG_PARSER_SKIP;
+        return std::pair(CONFIG_PARSER_SKIP, nullptr);
     } else if (c == '#') {
-        return this->read_comment(next);
+        return this->read_comment();
     }
 
     ungetc(c, this->file);
-    return this->read_key_value(next);
+    return this->read_key_value();
 }
 

@@ -1,15 +1,16 @@
 #pragma once
 #include "./config.h"
 #include <stdio.h>
+#include <utility>
 
 namespace Linkedin
 {
-/// An iterator using the next_element() should check while (v != CONFIG_PARSER_ERROR),
+/// An iterator using the next_element() should check while (v != CONFIG_PARSER_ERROR && v != CONFIG_PARSER_EOF),
 /// but also check for CONFIG_PARSER_SKIP.
 typedef enum config_parser_state_t {
     /// There was an error reading the line, or there is no line to read
     CONFIG_PARSER_ERROR,
-    /// The line that was just read should be stored and, there are no more
+    /// The config is at the end of file and, no data was read
     CONFIG_PARSER_EOF,
     /// The line that was just read should be skipped and, not stored
     CONFIG_PARSER_SKIP,
@@ -22,10 +23,10 @@ class ConfigParser
 {
 public:
     ConfigParser(FILE *file);
-    config_parser_state_t next_element(ConfigElement &next);
+    std::pair<config_parser_state_t, ConfigElement *> next_element();
 private:
-    config_parser_state_t read_comment(ConfigElement &next);
-    config_parser_state_t read_key_value(ConfigElement &next);
+    std::pair<config_parser_state_t, ConfigElement *> read_comment();
+    std::pair<config_parser_state_t, ConfigElement *> read_key_value();
     FILE *file;
 };
 };

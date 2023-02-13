@@ -13,7 +13,7 @@ ConfigElement::ConfigElement()
 std::string ConfigElement::to_string()
 {
     lprintf(LOG_ERROR, "Virtual method called erroneously.\n");
-    return "error";
+    throw std::runtime_error("to_string() not implemented for ConfigElement");
 }
 
 ConfigKeyValueElement::ConfigKeyValueElement(std::string key, std::string value)
