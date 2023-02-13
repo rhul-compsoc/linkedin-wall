@@ -6,12 +6,20 @@
 namespace Linkedin
 {
 
+typedef enum config_element_type_t {
+    CONFIG_ELEMENT_KEY_VALUE,
+    CONFIG_ELEMENT_COMMENT,
+    CONFIG_ELEMENT_OTHER
+} config_element_type_t;
+
 /// This is the abstract config element
 class ConfigElement
 {
 public:
     ConfigElement();
+    virtual ~ConfigElement();
     virtual std::string to_string();
+    virtual config_element_type_t type();
 };
 
 class ConfigKeyValueElement : public ConfigElement
@@ -19,7 +27,7 @@ class ConfigKeyValueElement : public ConfigElement
 public:
     ConfigKeyValueElement(std::string key, std::string value);
     std::string to_string() override;
-private:
+    config_element_type_t type() override;
     std::string key, value;
 };
 
@@ -29,6 +37,7 @@ class ConfigCommentElement : public ConfigElement
 public:
     ConfigCommentElement(std::string comment);
     std::string to_string() override;
+    config_element_type_t type() override;
 private:
     std::string comment;
 };
@@ -41,6 +50,7 @@ public:
     /// if the file does not exist, it is made with the default config, an editor for the
     /// config is then opened then, it is read.
     Config(std::string file_name);
+    ~Config();
 
     /// Returns the value of the value of a key
     /// exceptions are thrown on error.
@@ -55,9 +65,9 @@ public:
 
 private:
     void create_defaults();
+    void handle_token(ConfigElement *token);
     std::map<std::string, std::string> lookup_table;
-    std::list<ConfigElement> raw_config;
-
+    std::list<ConfigElement*> raw_config;
     std::string file_name;
 };
 
