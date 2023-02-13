@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <list>
+#include <utility>
 #include <string>
 
 namespace Linkedin
@@ -66,7 +67,7 @@ public:
 private:
     void create_defaults();
     void handle_token(ConfigElement *token);
-    std::map<std::string, std::string> lookup_table;
+    std::map<std::string, std::pair<ConfigKeyValueElement *, std::string>> lookup_table;
     std::list<ConfigElement*> raw_config;
     std::string file_name;
 };

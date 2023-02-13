@@ -123,7 +123,7 @@ void Config::create_defaults()
 std::string Config::get_value(std::string key)
 {
     if (auto search = this->lookup_table.find(key); search != lookup_table.end()) {
-        return search->first;
+        return search->second.second;
     } else {
         lprintf(LOG_ERROR, "Cannot find key %s in config\n", key.c_str());
         throw std::runtime_error("Cannot find key in config");
@@ -132,13 +132,22 @@ std::string Config::get_value(std::string key)
 
 void Config::set_value(std::string key, std::string value)
 {
-    std::string old_value = this->get_value(key);
-    if (old_value == value) {
+    // Check that the key is in the map
+    auto search = this->lookup_table.find(key);
+    if (search == lookup_table.end()) {
+        lprintf(LOG_ERROR, "Cannot set a key that is not in the config file\n");
+        throw std::runtime_error("Cannot set a key that is not in the config file");
+    }
+
+    // Check that the key should be written
+    std::pair<ConfigKeyValueElement *, std::string> vals = search->second;
+    if (vals.second == value) {
         lprintf(LOG_INFO, "Value being set is the same, no file write will occur\n");
         return;
     }
 
-    this->lookup_table[key] = value;
+    vals.first->value = value;
+    this->lookup_table[key].second = value;
     FILE *f = fopen(this->file_name.c_str(), "w");
     this->write(f);
     fclose(f);
@@ -153,8 +162,8 @@ void Config::handle_token(ConfigElement *token)
 
     if (token->type() == CONFIG_ELEMENT_KEY_VALUE) {
         ConfigKeyValueElement *token_kv = dynamic_cast<ConfigKeyValueElement *>(token);
-        if (auto search = this->lookup_table.find(token_kv->key); search != lookup_table.end()) {
-            this->lookup_table[token_kv->key] = token_kv->value;
+        if (auto search = this->lookup_table.find(token_kv->key); search == lookup_table.end()) {
+            this->lookup_table[token_kv->key] = std::pair(token_kv, token_kv->value);
         } else {
             lprintf(LOG_ERROR, "Key %s has been defined more than once in config file\n",
                     token_kv->key.c_str());

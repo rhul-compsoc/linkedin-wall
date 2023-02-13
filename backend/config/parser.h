@@ -15,7 +15,7 @@ typedef enum config_parser_state_t {
     /// The line that was just read should be skipped and, not stored
     CONFIG_PARSER_SKIP,
     /// The line that was just read should be stored and, there are more left
-    CONFIG_PARSER_NEXT=0,
+    CONFIG_PARSER_NEXT,
 } config_parser_state_t;
 
 /// An LL-1 parser for a configuration file

@@ -174,15 +174,21 @@ static int test_config_good_case()
     fclose(f);
 
     Config config = Config(GOOD_CONFIG_FILE);
+
     ASSERT(config.get_value("abc") == "123");
     config.set_value("abc", "123");
+    ASSERT(config.get_value("abc") == "123");
 
+    config.set_value("abc", "1234");
+    ASSERT(config.get_value("abc") == "1234");
+
+    lprintf(LOG_INFO, "Write the file then test it can be read\n");
     f = fopen(GOOD_CONFIG_FILE_2, "w");
     config.write(f);
     fclose(f);
 
     Config config2 = Config(GOOD_CONFIG_FILE_2);
-    ASSERT(config2.get_value("abc") == "123");
+    ASSERT(config2.get_value("abc") == "1234");
 
     return 1;
 }
