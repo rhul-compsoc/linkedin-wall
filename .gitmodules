@@ -4,3 +4,6 @@
 [submodule "backend/json"]
 	path = backend/json
 	url = https://github.com/nlohmann/json
+[submodule "backend/mongoose"]
+	path = backend/mongoose
+	url = git@github.com:cesanta/mongoose.git

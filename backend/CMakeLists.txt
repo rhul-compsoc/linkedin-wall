@@ -6,6 +6,14 @@ project(
   VERSION 0.1
   LANGUAGES C CXX)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+set(COMPILER_FLAGS
+    "-Og -Wno-unused-parameter -Wall -Wextra -Wpedantic -Werror -g")
+set(CMAKE_C_FLAGS "${COMPILER_FLAGS}")
+set(CMAKE_CXX_FLAGS "${COMPILER_FLAGS}")
+
 set(REPO_URL "https://github.com/rhul-compsoc/linkedin-wall")
 
 message(STATUS "Building ${CMAKE_PROJECT_NAME}")
@@ -45,11 +53,6 @@ string(LENGTH "${CMAKE_SOURCE_DIR}/" SOURCE_PATH_SIZE)
 add_definitions("-DSOURCE_PATH_SIZE=${SOURCE_PATH_SIZE}")
 add_definitions("-D__FILENAME__=(__FILE__ + SOURCE_PATH_SIZE)")
 
-set(COMPILER_FLAGS
-    "-Og -Wno-unused-parameter -Wall -Wextra -Wpedantic -Werror -g")
-set(CMAKE_C_FLAGS "${COMPILER_FLAGS}")
-set(CMAKE_CXX_FLAGS "${COMPILER_FLAGS}")
-
 # Setup doxygen
 find_package(Doxygen REQUIRED dot OPTIONAL_COMPONENTS mscgen dia)
 
@@ -62,8 +65,16 @@ set(LIBS curl nlohmann_json::nlohmann_json pqxx pq)
 set(CONFIG_SRC ./config/parser.h ./config/parser.cpp ./config/config.h
                ./config/config.cpp)
 set(MODEL_SRC ./model/auth.h ./model/auth.cpp)
-set(SRC ./testing.h/logger.h ./testing.h/logger.c ./testing.h/ansi_colour.h
-        ${MODEL_SRC} ${CONFIG_SRC})
+set(SERVER_SRC ./server/server.h ./server/server.cpp)
+set(SRC
+    ./testing.h/logger.h
+    ./testing.h/logger.c
+    ./testing.h/ansi_colour.h
+    ./mongoose/mongoose.h
+    ./mongoose/mongoose.c
+    ${MODEL_SRC}
+    ${CONFIG_SRC}
+    ${SERVER_SRC})
 set(TEST ${SRC} ./testing.h/testing.h ./testing.h/testing.c ./test_main.cpp
          ./config/test_config.h ./config/test_config.cpp)
 

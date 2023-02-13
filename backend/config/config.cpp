@@ -68,7 +68,9 @@ Config::Config(std::string file_name)
 
     FILE *f = fopen(file_name.c_str(), "r");
     if (f == NULL) {
+        lprintf(LOG_WARNING, "No configuration file was present, one was made - edit this then restart\n");
         this->create_defaults();
+        throw std::runtime_error("No configuration file");
     } else {
         ConfigParser parser = ConfigParser(f);
         bool flag = true;
@@ -114,9 +116,11 @@ Config::~Config()
 void Config::create_defaults()
 {
     FILE *f = fopen(this->file_name.c_str(), "w");
-    fprintf(f, "# Authentication key for oauth, this can be set by the server in runtime\n"
+    fprintf(f, "# This configuration file is machine generated - DO NOT MODIFY DURING EXECUTION\n"
+            BIND_ADDR_KEY "=http://0.0.0.0:6333\n"
+            "# Authentication key for oauth, this can be set by the server in runtime\n"
             "# DON'T CHANGE BY HAND\n" \
-            "auth_key=nan\n");
+            AUTH_KEY_KEY "=nan\n");
     fclose(f);
 }
 

@@ -1,6 +1,15 @@
-#include <iostream>
+#include "./config/config.h"
+#include "./server/server.h"
+#include "./testing.h/logger.h"
+
+using namespace Linkedin;
+
+#define CONFIG_FILE "config.conf"
 
 int main()
 {
-    std::cout << "Hello World!" << std::endl;
+    lprintf(LOG_INFO, "Reading config from %s\n", CONFIG_FILE);
+    Config *config = new Config(CONFIG_FILE);
+    Server server(config);
+    return 1;
 }
