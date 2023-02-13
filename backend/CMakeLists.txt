@@ -64,7 +64,8 @@ set(CONFIG_SRC ./config/parser.h ./config/parser.cpp ./config/config.h
 set(MODEL_SRC ./model/auth.h ./model/auth.cpp)
 set(SRC ./testing.h/logger.h ./testing.h/logger.c ./testing.h/ansi_colour.h
         ${MODEL_SRC} ${CONFIG_SRC})
-set(TEST ${SRC} ./testing.h/testing.h ./testing.h/testing.c ./test_main.cpp)
+set(TEST ${SRC} ./testing.h/testing.h ./testing.h/testing.c ./test_main.cpp
+         ./config/test_config.h ./config/test_config.cpp)
 
 # Main executable
 add_executable(linkedin-wall ./main.cpp ${SRC})
