@@ -48,15 +48,17 @@ public:
 
     /// Sets and, saves the config with a new value,
     /// exceptions are thrown on error.
-    std::string set_value(std::string key, std::string value);
+    void set_value(std::string key, std::string value);
 
     /// Writes the entire config file to an open file stream
     void write(FILE *file);
 
 private:
-    std::string create_defaults(std::string file_name);
+    void create_defaults();
     std::map<std::string, std::string> lookup_table;
     std::list<ConfigElement> raw_config;
+
+    std::string file_name;
 };
 
 };

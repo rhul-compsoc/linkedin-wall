@@ -71,6 +71,8 @@ config_parser_state_t ConfigParser::next_element(ConfigElement &next)
     int c = fgetc(this->file);
     if (c == EOF) {
         return CONFIG_PARSER_EOF;
+    } else if (c == '\n') {
+        return CONFIG_PARSER_SKIP;
     } else if (c == '#') {
         return this->read_comment(next);
     }

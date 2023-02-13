@@ -4,9 +4,16 @@
 
 namespace Linkedin
 {
+/// An iterator using the next_element() should check while (v != CONFIG_PARSER_ERROR),
+/// but also check for CONFIG_PARSER_SKIP.
 typedef enum config_parser_state_t {
+    /// There was an error reading the line, or there is no line to read
     CONFIG_PARSER_ERROR,
+    /// The line that was just read should be stored and, there are no more
     CONFIG_PARSER_EOF,
+    /// The line that was just read should be skipped and, not stored
+    CONFIG_PARSER_SKIP,
+    /// The line that was just read should be stored and, there are more left
     CONFIG_PARSER_NEXT=0,
 } config_parser_state_t;
 
