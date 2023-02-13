@@ -66,11 +66,49 @@ static int test_parser_good_case()
     ASSERT(ret.first == CONFIG_PARSER_NEXT);
     ASSERT(ret.second->to_string() == KEY_VALUE_1);
 
+    // Test new lines are ignored
+    fprintf(w, "\n");
+    fflush(w);
+
+    ret = parser.next_element();
+    ASSERT(ret.first == CONFIG_PARSER_SKIP);
+
+    // Test EOF
+    ASSERT(fclose(w) == 0);
+    ret = parser.next_element();
+
+    ASSERT(ret.first == CONFIG_PARSER_EOF);
+
     // Cleanup
     ASSERT(fclose(r) == 0);
+    return 1;
+}
+
+static int test_parser_error_case()
+{
+    int fid[2];
+    ASSERT(pipe(fid) == 0);
+
+    FILE *r = fdopen(fid[0], "r");
+    ASSERT(r != NULL);
+
+    FILE *w = fdopen(fid[1], "w");
+    ASSERT(w != NULL);
+
+    ConfigParser parser(r);
+
+    fprintf(w, "le fische au kerosine\n");
+    fflush(w);
+
+    std::pair<config_parser_state_t, ConfigElement *> ret = parser.next_element();
+    ASSERT(ret.first == CONFIG_PARSER_ERROR);
+
+    // Cleanup
     ASSERT(fclose(w) == 0);
+    ASSERT(fclose(r) == 0);
     return 1;
 }
 
 SUB_TEST(test_config, {&test_config_elemenets, "Test config elements"},
-{&test_parser_good_case, "Test parser good case"})
+{&test_parser_good_case, "Test parser good case"},
+{&test_parser_error_case, "Test parser error case"})
