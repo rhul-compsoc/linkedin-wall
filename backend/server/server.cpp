@@ -2,6 +2,7 @@
 #include "./connection.h"
 #include "../testing.h/logger.h"
 #include "../mongoose/mongoose.h"
+#include <string.h>
 #include <stdexcept>
 #include <sys/param.h>
 
@@ -48,11 +49,12 @@ static void event_handler(struct mg_connection *c,
 void Server::send_404(struct mg_connection *c, struct mg_http_message *hm)
 {
     char url[1024];
-    size_t len = MIN(sizeof(url), hm->uri.len);
+    size_t len = MIN(sizeof(url) - 1, hm->uri.len);
     strncpy(url, hm->uri.ptr, len);
+    url[len] = 0;
 
     mg_http_reply(c, 404, "", "404 error - cannot find %s", url);
-    lprintf(LOG_WARNING, "404 - %s\n", url);
+    lprintf(LOG_WARNING, "404 - Page Not Found at: %s\n", url);
 }
 
 void Server::run()
