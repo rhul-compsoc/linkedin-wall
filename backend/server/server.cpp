@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdexcept>
 #include <sys/param.h>
+#include <nlohmann/json.hpp>
 
 using namespace Linkedin;
 
@@ -39,6 +40,13 @@ static void event_handler(struct mg_connection *c,
         if (event == MG_EV_HTTP_MSG) {
             struct mg_http_message *hm = (struct mg_http_message *) ev_data;
             server->send_404(c, hm);
+        } else if (event == MG_EV_POLL && connection != fn_data) {
+            ConnectionContext *ctx = connection->get_context();
+            if (ctx == nullptr) return;
+            if (!ctx->has_message()) return;
+
+            std::string msg = ctx->next_message();
+            mg_ws_send(c, msg.c_str(), msg.size(), MG_EV_WS_MSG);
         } else if (event == MG_EV_CLOSE) {
             delete connection;
         }
@@ -54,6 +62,18 @@ void Server::send_404(struct mg_connection *c, struct mg_http_message *hm)
 
     mg_http_reply(c, 404, "", "404 error - cannot find %s", url);
     lprintf(LOG_WARNING, "404 - Page Not Found at: %s\n", url);
+}
+
+void Server::upgrade_to_ws(struct mg_connection *c, struct mg_http_message *hm)
+{
+    mg_ws_upgrade(c, hm, this->status("Upgraded to websocket").c_str());
+}
+
+std::string Server::status(std::string message)
+{
+    nlohmann::json status_json;
+    status_json["status"] = message;
+    return status_json.dump();
 }
 
 void Server::run()
