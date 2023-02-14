@@ -9,7 +9,7 @@ using namespace Linkedin;
 int main()
 {
     lprintf(LOG_INFO, "Reading config from %s\n", CONFIG_FILE);
-    Config *config = new Config(CONFIG_FILE);
-    Server server(config);
+    Config config = Config(CONFIG_FILE);
+    Server server(&config);
     return 1;
 }

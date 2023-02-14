@@ -117,10 +117,12 @@ void Config::create_defaults()
 {
     FILE *f = fopen(this->file_name.c_str(), "w");
     fprintf(f, "# This configuration file is machine generated - DO NOT MODIFY DURING EXECUTION\n"
+            "# The address that the web server should be bound to\n"
             BIND_ADDR_KEY "=http://0.0.0.0:6333\n"
-            "# Authentication key for oauth, this can be set by the server in runtime\n"
-            "# DON'T CHANGE BY HAND\n" \
-            AUTH_KEY_KEY "=nan\n");
+            "# Authentication key for oauth\n"
+            AUTH_KEY_KEY "=change me\n"
+            "# Client ID of your app\n"
+            CLIENT_ID_KEY "=change me\n");
     fclose(f);
 }
 

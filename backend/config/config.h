@@ -45,6 +45,7 @@ private:
 
 #define BIND_ADDR_KEY "bind_addr"
 #define AUTH_KEY_KEY "auth_key"
+#define CLIENT_ID_KEY "client_id"
 
 class Config
 {

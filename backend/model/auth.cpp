@@ -3,35 +3,44 @@
 
 using namespace Linkedin;
 
-Authentication::Authentication(std::string token)
+Authentication::Authentication(Config *config)
 {
-    this->token = token;
-}
+    this->config = config;
 
-Authentication::Authentication()
-{
-    char url[] = "";
-
-    // Open the LinkedIn Oauth2 page
-    lprintf(LOG_INFO, "You must use Oauth2 to authorise this web-app.\n"
-            "Please enter the following url %s into your machine.\n",
-            url);
-
-    // Waits for the server to get a response
-    lprintf(LOG_INFO, "Once you have logged in via the page, the login "
-            "process will continue.\n");
-    /// TODO!!!!
-
-    // Stores the token locally
-    this->token = "CHANGE ME 123";
+    if (!this->test_auth()) {
+        this->refresh_authentication();
+    }
 }
 
 std::string Authentication::get_auth_header()
 {
-    return "Authorization: Bearer " + this->token;
+    return "Authorization: Bearer " + this->get_token();
 }
 
 std::string Authentication::get_token()
 {
-    return this->token;
+    return this->config->get_value(AUTH_KEY_KEY);
+}
+
+std::string Authentication::get_client_id()
+{
+    return this->config->get_value(CLIENT_ID_KEY);
+}
+
+std::string Authentication::get_auth_url()
+{
+    return "https://www.linkedin.com/developers/tools/oauth/token-generator?clientId=" + this->get_client_id();
+}
+
+void Authentication::refresh_authentication()
+{
+    lprintf(LOG_WARNING, "You must use Oauth2 to authorise this web-app.\n"
+            "Please go to %s\n"
+            "then set the auth key in the web interface or config file.\n",
+            this->get_auth_url().c_str());
+}
+
+bool Authentication::test_auth()
+{
+    return false;
 }

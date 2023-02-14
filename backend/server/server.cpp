@@ -12,12 +12,14 @@ Server::Server(Config *config)
         throw std::runtime_error("Invalid configuration for server");
     }
 
+    this->auth = new Authentication(this->config);
+
     this->run();
 }
 
 Server::~Server()
 {
-
+    delete this->auth;
 }
 
 static void event_handler(struct mg_connection *c,
@@ -90,6 +92,8 @@ bool Server::try_get_value(std::string key)
 bool Server::is_config_good()
 {
     CONFIG_ASSERT(this->try_get_value(BIND_ADDR_KEY));
+    CONFIG_ASSERT(this->try_get_value(AUTH_KEY_KEY));
+    CONFIG_ASSERT(this->try_get_value(CLIENT_ID_KEY));
     return true;
 }
 
