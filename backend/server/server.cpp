@@ -16,7 +16,6 @@ Server::Server(Config *config)
     }
 
     this->auth = new Authentication(this->config);
-
     this->run();
 }
 
@@ -59,10 +58,11 @@ void Server::send_404(struct mg_connection *c, struct mg_http_message *hm)
 
 void Server::run()
 {
-    lprintf(LOG_INFO, "LinkedIn Wall Backend\n-> by djpiper28 see %s for git repo.\n",
-            REPO_URL);
-    printf("-> Version %s\n",
-           VERSION);
+    lprintf(LOG_INFO, "LinkedIn Wall Backend\n"
+            "-> by djpiper28 see %s for git repo.\n"
+            "-> Version %s\n",
+            REPO_URL,
+            VERSION);
 
     lprintf(LOG_INFO, "Starting api server, listening on %s\n",
             this->get_bind_addr().c_str());
