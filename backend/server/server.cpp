@@ -1,7 +1,9 @@
 #include "./server.h"
+#include "./connection.h"
 #include "../testing.h/logger.h"
 #include "../mongoose/mongoose.h"
 #include <stdexcept>
+#include <sys/param.h>
 
 using namespace Linkedin;
 
@@ -27,21 +29,30 @@ static void event_handler(struct mg_connection *c,
                           void *ev_data,
                           void *fn_data)
 {
-    //Server *server = (Server *) fn_data;
+    Server *server = (Server *) fn_data;
 
     if (event == MG_EV_ACCEPT) {
         //Init connection struct
-        /*
-        struct ServerConnection *s = (struct ServerConnection *)
-                                     malloc(sizeof(struct ServerConnection));
-        initServerConnection(s, api);
-
-        c->fn_data = (void *) s;
-        */
-    } else if (event == MG_EV_HTTP_MSG) {
-        //struct mg_http_message *hm = (struct mg_http_message *) ev_data;
-
+        c->fn_data = (void *) new Connection();
+    } else {
+        Connection *connection = (Connection *) c->fn_data;
+        if (event == MG_EV_HTTP_MSG) {
+            struct mg_http_message *hm = (struct mg_http_message *) ev_data;
+            server->send_404(c, hm);
+        } else if (event == MG_EV_CLOSE) {
+            delete connection;
+        }
     }
+}
+
+void Server::send_404(struct mg_connection *c, struct mg_http_message *hm)
+{
+    char url[1024];
+    size_t len = MIN(sizeof(url), hm->uri.len);
+    strncpy(url, hm->uri.ptr, len);
+
+    mg_http_reply(c, 404, "", "404 error - cannot find %s", url);
+    lprintf(LOG_WARNING, "404 - %s\n", url);
 }
 
 void Server::run()

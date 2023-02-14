@@ -2,6 +2,7 @@
 #include <string>
 #include "../config/config.h"
 #include "../model/auth.h"
+#include "../mongoose/mongoose.h"
 
 namespace Linkedin
 {
@@ -10,6 +11,7 @@ class Server
 public:
     Server(Config *config);
     ~Server();
+    void send_404(struct mg_connection *c, struct mg_http_message *hm);
 private:
     bool try_get_value(std::string key);
     bool is_config_good();
