@@ -25,21 +25,21 @@ Server::~Server()
     delete this->auth;
 }
 
-static void event_handler(struct mg_connection *c,
-                          int event,
-                          void *ev_data,
-                          void *fn_data)
+void Server::__event_handler(struct mg_connection *c,
+                             int event,
+                             void *ev_data,
+                             void *fn_data)
 {
-    Server *server = (Server *) fn_data;
-
     if (event == MG_EV_ACCEPT) {
         //Init connection struct
-        c->fn_data = (void *) new Connection();
+        Connection *conn = new Connection();
+        c->fn_data = (void *) conn;
+        this->current_connections.push_back(conn);
     } else {
         Connection *connection = (Connection *) c->fn_data;
         if (event == MG_EV_HTTP_MSG) {
             struct mg_http_message *hm = (struct mg_http_message *) ev_data;
-            server->send_404(c, hm);
+            this->send_404(c, hm);
         } else if (event == MG_EV_POLL && connection != fn_data) {
             ConnectionContext *ctx = connection->get_context();
             if (ctx == nullptr) return;
@@ -48,9 +48,28 @@ static void event_handler(struct mg_connection *c,
             std::string msg = ctx->next_message();
             mg_ws_send(c, msg.c_str(), msg.size(), MG_EV_WS_MSG);
         } else if (event == MG_EV_CLOSE) {
+            for (std::list<Connection *>::iterator it = this->current_connections.begin();
+                    it != this->current_connections.end(); it++) {
+                if (*it == connection) {
+                    it = this->current_connections.erase(it);
+                    break;
+                }
+            }
+
             delete connection;
         }
     }
+}
+
+static void event_handler(struct mg_connection *c,
+                          int event,
+                          void *ev_data,
+                          void *fn_data)
+{
+    Server *server = (Server *) fn_data;
+    pthread_mutex_lock(&server->conn_lock);
+    server->__event_handler(c, event, ev_data, fn_data);
+    pthread_mutex_unlock(&server->conn_lock);
 }
 
 void Server::send_404(struct mg_connection *c, struct mg_http_message *hm)

@@ -59,7 +59,7 @@ find_package(Doxygen REQUIRED dot OPTIONAL_COMPONENTS mscgen dia)
 # Add Libraries
 add_subdirectory(json)
 
-set(LIBS curl nlohmann_json::nlohmann_json pqxx pq)
+set(LIBS curl nlohmann_json::nlohmann_json pqxx pq pthread)
 
 # Sources
 set(CONFIG_SRC ./config/parser.h ./config/parser.cpp ./config/config.h
