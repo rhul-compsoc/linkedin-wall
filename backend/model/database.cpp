@@ -7,6 +7,8 @@ using namespace Linkedin;
 DatabaseConnector::DatabaseConnector(Config *config)
 {
     this->config = config;
+    this->make_tables();
+    this->test_connection();
 }
 
 DatabaseConnector::~DatabaseConnector()
@@ -35,6 +37,12 @@ pqxx::connection *DatabaseConnector::get_connection()
 void DatabaseConnector::make_tables()
 {
     const static std::string tables_sql = "";
+
+    try {
+        delete this->get_connection();
+    } catch(std::exception &e) {
+        lprintf(LOG_ERROR, "Creating tables failed - %s\n", e.what());
+    }
 }
 
 std::string DatabaseConnector::get_connection_string()
