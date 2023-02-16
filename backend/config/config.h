@@ -46,6 +46,11 @@ private:
 #define BIND_ADDR_KEY "bind_addr"
 #define AUTH_KEY_KEY "auth_key"
 #define CLIENT_ID_KEY "client_id"
+#define DB_NAME_KEY "db_name"
+#define DB_USER_KEY "db_user"
+#define DB_PASSWORD_KEY "db_password"
+#define DB_HOST_KEY "db_host"
+#define DB_PORT_KEY "db_port"
 
 class Config
 {

@@ -64,7 +64,8 @@ set(LIBS curl nlohmann_json::nlohmann_json pqxx pq pthread)
 # Sources
 set(CONFIG_SRC ./config/parser.h ./config/parser.cpp ./config/config.h
                ./config/config.cpp)
-set(MODEL_SRC ./model/auth.h ./model/auth.cpp)
+set(MODEL_SRC ./model/auth.h ./model/auth.cpp ./model/database.h
+              ./model/database.cpp)
 set(SERVER_SRC ./server/server.h ./server/server.cpp ./server/connection.h
                ./server/connection.cpp)
 set(SRC

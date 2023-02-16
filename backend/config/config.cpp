@@ -122,7 +122,18 @@ void Config::create_defaults()
             "# Authentication key for oauth\n"
             AUTH_KEY_KEY "=change me\n"
             "# Client ID of your app\n"
-            CLIENT_ID_KEY "=change me\n");
+            CLIENT_ID_KEY "=change me\n"
+            "# Postgres database information\n"
+            "# Database name\n"
+            DB_NAME_KEY "=linkedin_wall\n"
+            "# Database user\n"
+            DB_USER_KEY "=admin\n"
+            "# Database password\n"
+            DB_PASSWORD_KEY "=password123\n"
+            "# Database host\n"
+            DB_HOST_KEY "=localhost\n"
+            "# Database port\n"
+            DB_PORT_KEY "=5432");
     fclose(f);
 }
 

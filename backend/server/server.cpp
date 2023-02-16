@@ -16,6 +16,8 @@ Server::Server(Config *config)
         throw std::runtime_error("Invalid configuration for server");
     }
 
+    pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+    this->conn_lock = lock;
     this->auth = new Authentication(this->config);
     this->run();
 }
@@ -146,6 +148,11 @@ bool Server::is_config_good()
     CONFIG_ASSERT(this->try_get_value(BIND_ADDR_KEY));
     CONFIG_ASSERT(this->try_get_value(AUTH_KEY_KEY));
     CONFIG_ASSERT(this->try_get_value(CLIENT_ID_KEY));
+    CONFIG_ASSERT(this->try_get_value(DB_NAME_KEY));
+    CONFIG_ASSERT(this->try_get_value(DB_USER_KEY));
+    CONFIG_ASSERT(this->try_get_value(DB_PASSWORD_KEY));
+    CONFIG_ASSERT(this->try_get_value(DB_HOST_KEY));
+    CONFIG_ASSERT(this->try_get_value(DB_PASSWORD_KEY));
     return true;
 }
 
