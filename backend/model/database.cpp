@@ -18,7 +18,7 @@ DatabaseConnector::~DatabaseConnector()
 bool DatabaseConnector::test_connection()
 {
     try {
-        this->get_connection();
+        delete this->get_connection();
     } catch(std::exception &e) {
         lprintf(LOG_ERROR, "Testing database connection failed - %s\n", e.what());
         return false;
